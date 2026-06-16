@@ -1,0 +1,17 @@
+import { Table, Tag, Button, Space, Select, Input, Row, Col, Statistic } from "antd"
+import { DownloadOutlined, SearchOutlined, FilterOutlined } from "@ant-design/icons"
+import { useState } from "react"
+import MonitorSidebar from "../../components/monitor/Sidebar"
+import MonitorHeader from "../../components/monitor/Header"
+import { mockAlerts, mockAlertStats } from "../../utils/mockData"
+const typeMap: Record<string,{color:string;text:string}> = {sleeping:{color:"#ff1744",text:"学生睡觉"},head_down:{color:"#ff9100",text:"学生低头"},fighting:{color:"#ff1744",text:"学生打闹"},no_teacher:{color:"#1677ff",text:"无人上课"},crowd:{color:"#7c4dff",text:"人员聚集"}}
+const statusMap: Record<string,{color:string;text:string}> = {pending:{color:"#ff1744",text:"待处理"},confirmed:{color:"#ff9100",text:"已确认"},resolved:{color:"#00e676",text:"已解决"}}
+export default function AlertRecords() {
+  const [typeFilter, setTypeFilter] = useState("all"); const filteredAlerts = typeFilter==="all"?mockAlerts:mockAlerts.filter(a=>a.type===typeFilter)
+  return (<div className="monitor-layout"><div className="monitor-sidebar"><MonitorSidebar /></div><div className="monitor-main"><MonitorHeader /><div className="monitor-content">
+    <div className="flex-between page-header"><div><h2>告警记录检索与导出</h2><p>历史告警记录搜索、筛选、批量导出</p></div><Button icon={<DownloadOutlined />} type="primary">导出记录</Button></div>
+    <Row gutter={[16,16]} className="mb-16"><Col span={6}><Statistic title="总告警记录" value={mockAlerts.length} valueStyle={{color:"#ff1744"}} /></Col><Col span={6}><Statistic title="待处理" value={mockAlertStats.pendingCount} valueStyle={{color:"#ff9100"}} /></Col><Col span={6}><Statistic title="已解决" value={mockAlertStats.resolvedCount} valueStyle={{color:"#00e676"}} /></Col><Col span={6}><Statistic title="今日新增" value={mockAlertStats.todayTotal} valueStyle={{color:"#1677ff"}} /></Col></Row>
+    <div className="data-panel"><div className="flex-between" style={{marginBottom:16}}><Space><Input prefix={<SearchOutlined />} placeholder="搜索教室名称..." style={{width:200}} /><Select value={typeFilter} onChange={setTypeFilter} style={{width:140}} options={[{value:"all",label:"全部类型"},{value:"sleeping",label:"学生睡觉"},{value:"head_down",label:"学生低头"},{value:"fighting",label:"学生打闹"},{value:"no_teacher",label:"无人上课"},{value:"crowd",label:"人员聚集"}]} /><Button icon={<FilterOutlined />}>筛选</Button></Space><Button icon={<DownloadOutlined />}>导出Excel</Button></div>
+    <Table dataSource={filteredAlerts} rowKey="id" size="middle" pagination={{pageSize:10}} columns={[{title:"ID",dataIndex:"id",key:"id",width:100},{title:"教室",dataIndex:"classroomName",key:"classroomName"},{title:"告警类型",dataIndex:"type",key:"type",render:(t:string)=><Tag color={typeMap[t]?.color||"#1677ff"}>{typeMap[t]?.text||t}</Tag>},{title:"严重程度",dataIndex:"severity",key:"severity",render:(s:string)=><Tag color={s==="high"?"#ff1744":s==="medium"?"#ff9100":"#1677ff"}>{s==="high"?"高危":s==="medium"?"中危":"低危"}</Tag>},{title:"描述",dataIndex:"description",key:"description",ellipsis:true},{title:"时间",dataIndex:"timestamp",key:"timestamp",render:(t:string)=>new Date(t).toLocaleString("zh-CN"),width:180},{title:"状态",dataIndex:"status",key:"status",render:(s:string)=><Tag color={statusMap[s]?.color}>{statusMap[s]?.text}</Tag>},{title:"操作",key:"action",render:()=><Button size="small">查看详情</Button>}]} /></div>
+  </div></div></div>)
+}
