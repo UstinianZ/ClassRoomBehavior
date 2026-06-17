@@ -49,8 +49,8 @@ export default function ExamGrading() {
                       key: "action",
                       render: (_: any, record: any) => {
                         if (record.status === "completed") return <Button size="small">查看成绩</Button>
-                        return <Button type="primary" size="small" disabled={record.status === "upcoming"}>开始阅卷</Button>
-                      }
+                        return <Button type="primary" size="small" disabled={record.status === "upcoming"}>开始阅卷</Button>}
+                      
                     },
                   ]}
                 />
